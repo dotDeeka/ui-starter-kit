@@ -62,6 +62,14 @@ gulp.task('ts-watcher', function () {
 
         }
     });
+
+});
+
+gulp.task('template-watcher', function () {
+
+    $.watch(config.htmltemplates, function() {
+        gulp.start('templatecache');
+    });
 });
 
 /**
@@ -150,9 +158,9 @@ gulp.task('scss-watcher', function() {
  * Create $templateCache from the html templates
  * @return {Stream}
  */
-gulp.task('templatecache', ['clean-code'], function() {
+gulp.task('templatecache', function() {
     log('Creating an AngularJS $templateCache');
-
+    del(config.temp + config.templateCache.file);
     return gulp
         .src(config.htmltemplates)
         .pipe($.if(args.verbose, $.bytediff.start()))
@@ -371,7 +379,7 @@ gulp.task('autotest', function(done) {
  * --debug-brk or --debug
  * --nosync
  */
-gulp.task('serve-dev', ['inject', 'scss-watcher', 'ts-watcher'], function() {
+gulp.task('serve-dev', ['inject', 'scss-watcher', 'ts-watcher', 'template-watcher'], function() {
     serve(true /*isDev*/);
 });
 
