@@ -10,10 +10,7 @@ class CoreController {
     constructor($http) {
         this.$http = $http;
     }
-    
+
 }
 
 angular.module('app.core').controller('CoreController', CoreController);
-
-
-

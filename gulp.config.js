@@ -53,7 +53,7 @@ module.exports = function() {
             '.tmp/**/*.js'
         ],
         less: client + 'styles/styles.less',
-        scss: client + 'styles/scss/main.scss',
+        scss: client + 'styles/scss/**/*.scss',
         report: report,
         root: root,
         server: server,

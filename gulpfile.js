@@ -5,6 +5,7 @@ var del = require('del');
 var glob = require('glob');
 var gulp = require('gulp');
 var path = require('path');
+var bourbon = require('node-bourbon').includePaths;
 var _ = require('lodash');
 var $ = require('gulp-load-plugins')({lazy: true});
 
@@ -52,7 +53,7 @@ gulp.task('ts-watcher', function () {
         log(file.relative + ' was: ' + file.event);
 
         if (file.event === 'unlink') {
-            var delPath = file.relative.replace('src/client/app', '.tmp').replace('.ts','.js');
+            var delPath = file.relative.replace('src/client/app', '.tmp').replace('.ts', '.js');
             log('DELETING ' + delPath);
             del(delPath);
             gulp.start('inject');
@@ -99,28 +100,18 @@ gulp.task('plato', function(done) {
 });
 
 /**
- * Compile less to css
+ * Compile scss to css
  * @return {Stream}
  */
-// gulp.task('styles', ['clean-styles'], function() {
-//     log('Compiling Less --> CSS');
-
-//     return gulp
-//         .src(config.less)
-//         .pipe($.plumber()) // exit gracefully if something fails after this
-//         .pipe($.less())
-// //        .on('error', errorLogger) // more verbose and dupe output. requires emit.
-//         .pipe($.autoprefixer({browsers: ['last 2 version', '> 5%']}))
-//         .pipe(gulp.dest(config.temp));
-// });
-
 gulp.task('styles', ['clean-styles'], function () {
     log('Compiling SCSS --> CSS');
 
     return gulp
         .src(config.scss)
         .pipe($.plumber())
-        .pipe($.compass(config.getCompassOptions()))
+        .pipe($.sass({
+            includePaths: ['styles'].concat(bourbon)
+        }))
         .pipe($.autoprefixer({browsers: ['last 2 version', '> 5%']}))
         .pipe(gulp.dest(config.temp));
 });
