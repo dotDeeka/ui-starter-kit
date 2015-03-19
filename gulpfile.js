@@ -142,7 +142,9 @@ gulp.task('images', ['clean-images'], function() {
 });
 
 gulp.task('scss-watcher', function() {
-    gulp.watch([config.scss], ['styles']);
+    $.watch(config.scss, function () {
+        gulp.start('styles');
+    });
 });
 
 /**
