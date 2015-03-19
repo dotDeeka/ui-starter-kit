@@ -29,7 +29,6 @@ var port = process.env.PORT || config.defaultPort;
 gulp.task('help', $.taskListing);
 gulp.task('default', ['help']);
 
-
 /**
  * Compile the TypeScript
  */
@@ -40,10 +39,29 @@ var tsProject = $.typescript.createProject({
 });
 
 gulp.task('ts', function () {
+    log('Compile all the TypeScript');
     return gulp
         .src(config.ts)
         .pipe($.typescript(tsProject))
         .pipe(gulp.dest(config.temp));
+});
+
+gulp.task('ts-watcher', function () {
+
+    $.watch(config.ts, {}, function (file) {
+        log(file.relative + ' was: ' + file.event);
+
+        if (file.event === 'unlink') {
+            var delPath = file.relative.replace('src/client/app', '.tmp').replace('.ts','.js');
+            log('DELETING ' + delPath);
+            del(delPath);
+            gulp.start('inject');
+        } else {
+            gulp.start(['ts', 'inject']);
+            //gulp.start('inject');
+
+        }
+    });
 });
 
 /**
@@ -353,7 +371,7 @@ gulp.task('autotest', function(done) {
  * --debug-brk or --debug
  * --nosync
  */
-gulp.task('serve-dev', ['inject'], function() {
+gulp.task('serve-dev', ['inject', 'scss-watcher', 'ts-watcher'], function() {
     serve(true /*isDev*/);
 });
 
@@ -521,8 +539,6 @@ function startBrowserSync(isDev, specRunner) {
     // If dev: watches less, compiles it to css, browser-sync handles reload
     if (isDev) {
         gulp.watch([config.scss], ['styles'])
-            .on('change', changeEvent);
-        gulp.watch([config.ts], ['ts'])
             .on('change', changeEvent);
     } else {
         gulp.watch([config.scss, config.js, config.html], ['optimize', browserSync.reload])

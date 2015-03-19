@@ -6,8 +6,7 @@
 class MainController {
 
     constructor() {
-        console.log('woot ');
-        debugger;
+        console.log('woot');
     }
 
 }
